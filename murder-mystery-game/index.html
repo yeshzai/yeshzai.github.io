@@ -49,9 +49,28 @@
             color: #007bff;
             box-shadow: 0 0 25px rgba(0, 123, 255, 0.9);
         }
+
+        #mobileWarning {
+            display: none;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            background: red;
+            color: white;
+            text-align: center;
+            padding: 10px;
+            font-size: 18px;
+            font-weight: bold;
+            z-index: 1000;
+        }        
     </style>
 </head>
 <body>
+    <div id="mobileWarning">
+        ⚠️ This website is best viewed on a desktop.
+    </div>
+    
+
     <div id="container1">
         <p>
             At Bicol University, the prestigious Computer Science Lab becomes the center of a chilling mystery when a disfigured body is discovered in the 
@@ -70,5 +89,13 @@
             <a id="Continue" href="scene.html">Start</a>
         </div>
     </div>
+
+    <script>
+        window.onload = function () {
+            if (/Mobi|Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
+                document.getElementById('mobileWarning').style.display = 'block';
+            }
+        };        
+    </script>
 </body>
 </html>
