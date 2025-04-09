@@ -324,6 +324,22 @@
             color: #28a745;
             transform: scale(1.05);
         }
+
+        .fingerprint {
+            position: absolute;
+            top: 10%;  
+            left: 56%;
+            width: 27px;
+            transform: rotate(-10deg);
+            cursor: zoom-in;
+            opacity: 0.85;
+        }
+        #fingerprintImage {
+            transition: transform 0.3s ease;
+        }
+        #fingerprintImage:hover {
+            transform: scale(1.05);
+        }          
     </style>
 </head>
 <body>
@@ -333,6 +349,7 @@
     <audio id="sound-paper" src="audio/paper-uncrumple.mp3" preload="auto"></audio>
     <audio id="sound-idcard" src="audio/id-card-pickup.mp3" preload="auto"></audio>
     <audio id="sound-folder" src="audio/folder-open.mp3" preload="auto"></audio>
+    <audio id="sound-fingerprint-scan" src="audio/fingerprint-scan.mp3" preload="auto"></audio>
     <audio id="sound-laptop-open" src="audio/laptop-open.mp3" preload="auto"></audio>
     <audio id="sound-laptop-close" src="audio/laptop-close.mp3" preload="auto"></audio>
 
@@ -343,7 +360,7 @@
         <img src="img/blood-floor.png" class="blood-splatter" style="bottom: 2%; right: 29%; width: 120px; transform: rotate(25deg);">
         <img src="img/id.png" class="id-card" id="idCard" data-bs-toggle="modal" data-bs-target="#idModal" alt="ID Card">
         <img src="img/ball-crumbled-paper.png" class="crumpled-paper" id="crumpledPaper" data-bs-toggle="modal" data-bs-target="#crumpledPaperModal" alt="Ball Crumpled Paper">
-        <img src="img/Partial_FP__Dr._Esteban.png" alt="Partial Fingerprint" class="partial-fingerprint" data-bs-toggle="tooltip" data-bs-placement="top" title="Partial fingerprint fragment" onclick="openFingerprintModal()"/>
+        <img src="img/Partial_FP__Dr._Esteban.png" alt="Partial Fingerprint" id="fingerprintScan" class="partial-fingerprint" data-bs-toggle="tooltip" data-bs-placement="top" title="Partial fingerprint fragment" onclick="openFingerprintModal()"/>
         <div class="computer-screen-wrapper" onclick="zoomIntoScreen()">
             <div class="computer-screen folder-row" id="folderRow"></div>
         </div>
@@ -551,13 +568,30 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body mt-4">
-                    <img id="suspectImage" src="/img/folder.png" alt="Suspect Folder" style="width: 90%; max-width: 800px;" class="mb-3">
+                    <!-- Container for Folder + Fingerprint -->
+                    <div class="position-relative d-inline-block">
+                        <img id="suspectImage" src="/img/folder.png" alt="Suspect Folder" style="width: 90%; max-width: 800px;" class="mb-3">
+                        <img id="fingerprintImage" src="/img/fingerprint.png" alt="Fingerprint Evidence" class="fingerprint mt-2" onclick="zoomFingerprint('')">
+                    </div>
                     <p id="suspectDesc"></p>
                 </div>
             </div>
         </div>
     </div>
 
+    <!-- Fingerprint Zoom Modal -->
+    <div class="modal fade" id="fingerprintZoomModal" tabindex="-1" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered modal-lg">
+            <div class="modal-content bg-dark">
+                <div class="modal-header border-0">
+                    <button type="button" class="btn-close btn-close-white" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body text-center p-0">
+                    <img id="zoomedFingerprint" src="/img/fingerprint.png" alt="Fingerprint Zoomed" class="img-fluid" style="width: 40%;">
+                </div>
+            </div>
+        </div>
+    </div>
 
     <button id="playSound" style="display:none;">Play</button>
     <audio id="eerieAudio" loop>
@@ -579,6 +613,11 @@
         // ID Card
         document.getElementById("idCard").addEventListener("click", () => {
           document.getElementById("sound-idcard").play();
+        });
+
+        // Fingerprint Scan
+        document.getElementById("fingerprintScan").addEventListener("click", () => {
+            document.getElementById("sound-fingerprint-scan").play();
         });
       
         // Folder(s)
@@ -725,10 +764,14 @@
             const profileImage = document.getElementById('suspectImage');
             const profileTitle = document.getElementById('suspectName');
             const profileDesc = document.getElementById('suspectDesc');
+            const fingerprintImage = document.getElementById('fingerprintImage');
     
             // Customize based on name
+            let fingerprintSrc = ""; // Store fingerprint image path
+
             if (name === "Vincent") {
                 profileImage.src = "img/vincent-profile.png";
+                fingerprintImage.src = "img/fingerprint-vincent.png";
                 profileTitle.textContent = "Vincent Lim";
                 profileDesc.innerHTML = `
                     <strong>Suspect #1:</strong> Known associate of the victim. Claims an alibi at the time of the incident.<br><br>
@@ -765,6 +808,7 @@
                 `;
             } else if (name === "Maria") {
                 profileImage.src = "img/maria-profile.png";
+                fingerprintImage.src = "img/fingerprint-maria.png";
                 profileTitle.textContent = "Maria Dela Cruz";
                 profileDesc.innerHTML = `
                     <strong>Suspect #2:</strong> Longtime lab technician. Inconsistent statements.<br><br>
@@ -802,6 +846,7 @@
                 `;
             } else if (name === "Esteban") {
                 profileImage.src = "img/esteban-profile.png";
+                fingerprintImage.src = "img/fingerprint-esteban.png";
                 profileTitle.textContent = "Dr. Esteban Ramirez";
                 profileDesc.innerHTML = `
                     <strong>Suspect #3:</strong>  Senior faculty member with deep ties to the Overseer Project.<br><br>
@@ -839,6 +884,7 @@
                 `;
             } else if (name === "Rafael") {
                 profileImage.src = "img/rafael-profile.png";
+                fingerprintImage.src = "img/fingerprint-rafael.png";
                 profileTitle.textContent = "Rafael Kyle Jimenez";
                 profileDesc.innerHTML = `
                     <strong>Suspect #4:</strong> Overseer Project’s creator. Keeps everything under tight control.<br><br>
@@ -876,6 +922,7 @@
                 `;
             } else if (name === "Angela") {
                 profileImage.src = "img/angela-profile.png";
+                fingerprintImage.src = "img/fingerprint-angela.png";
                 profileTitle.textContent = "Angela Cortez";
                 profileDesc.innerHTML = `
                     <strong>Suspect #5:</strong> Promising researcher with connections to both the victim and sensitive data.<br><br>
@@ -911,10 +958,44 @@
                     </ul>
                 `;
             }
+
+            // Set the fingerprint image source
+            //fingerprintImageZoom.src = fingerprintSrc;
+
+            // Update the fingerprint's onclick dynamically based on the current suspect
+            fingerprintImage.setAttribute("onclick", `zoomFingerprint('${name}')`);
     
             // Show the suspect profile modal
             const profileModal = new bootstrap.Modal(document.getElementById('suspectProfileModal'));
             profileModal.show();
+
+            // Open the fingerprint zoom modal
+            //const fingerprintModal = new bootstrap.Modal(document.getElementById('fingerprintModal'));
+            //fingerprintModal.show();
+        }
+
+        function zoomFingerprint(suspectName) {
+            // Play the fingerprint scan sound
+            document.getElementById("sound-fingerprint-scan").play();
+
+            const fingerprintModal = new bootstrap.Modal(document.getElementById('fingerprintZoomModal'));
+            const zoomedFingerprint = document.getElementById('zoomedFingerprint');
+            
+            // Set the fingerprint image based on the clicked suspect
+            if (suspectName === "Vincent") {
+                zoomedFingerprint.src = "img/fingerprint-vincent.png";  
+            } else if (suspectName === "Maria") {
+                zoomedFingerprint.src = "img/fingerprint-maria.png"; 
+            } else if (suspectName === "Esteban") {
+                zoomedFingerprint.src = "img/fingerprint-esteban.png"; 
+            } else if (suspectName === "Rafael") {
+                zoomedFingerprint.src = "img/fingerprint-rafael.png"; 
+            } else if (suspectName === "Angela") {
+                zoomedFingerprint.src = "img/fingerprint-angela.png"; 
+            } 
+            
+            // Open the fingerprint modal
+            fingerprintModal.show();
         }
     </script>    
 
@@ -961,6 +1042,9 @@
             folderContainer1.classList.add('move-fade-out');
             laptopCorner.classList.add('move-fade-out');
             scene.classList.add('zoom-effect');
+
+            // Set music state so it continues on screen.html
+            sessionStorage.setItem("musicPlaying", "true");
 
             // Play glitch sound just before switching pages (with lower volume)
             let glitchAudio = document.getElementById("newTrack");
