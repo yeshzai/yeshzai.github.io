@@ -330,13 +330,19 @@
     <button class="back-button" onclick="location.href='index.html'">← Back to Premise</button>
     <a id="ExternalLink" href="https://seanmaravillo.github.io/image-video-steganography/" target="_blank">Tools</a>
 
+    <audio id="sound-paper" src="audio/paper-uncrumple.mp3" preload="auto"></audio>
+    <audio id="sound-idcard" src="audio/id-card-pickup.mp3" preload="auto"></audio>
+    <audio id="sound-folder" src="audio/folder-open.mp3" preload="auto"></audio>
+    <audio id="sound-laptop-open" src="audio/laptop-open.mp3" preload="auto"></audio>
+    <audio id="sound-laptop-close" src="audio/laptop-close.mp3" preload="auto"></audio>
+
     <div class="scene">
         <div class="background-image"></div>
         <img src="img/dead-body-bgremoved.png" alt="Slumped body" class="body-silhouette">
         <img src="img/blood-desk.png" class="blood-splatter" style="top: 55.5%; left: 65%; width: 85px; transform: rotate(5deg); z-index: 1;">
         <img src="img/blood-floor.png" class="blood-splatter" style="bottom: 2%; right: 29%; width: 120px; transform: rotate(25deg);">
-        <img src="img/id.png" class="id-card" data-bs-toggle="modal" data-bs-target="#idModal" alt="ID Card">
-        <img src="img/ball-crumbled-paper.png" class="crumpled-paper" data-bs-toggle="modal" data-bs-target="#crumpledPaperModal" alt="Ball Crumpled Paper">
+        <img src="img/id.png" class="id-card" id="idCard" data-bs-toggle="modal" data-bs-target="#idModal" alt="ID Card">
+        <img src="img/ball-crumbled-paper.png" class="crumpled-paper" id="crumpledPaper" data-bs-toggle="modal" data-bs-target="#crumpledPaperModal" alt="Ball Crumpled Paper">
         <img src="img/Partial_FP__Dr._Esteban.png" alt="Partial Fingerprint" class="partial-fingerprint" data-bs-toggle="tooltip" data-bs-placement="top" title="Partial fingerprint fragment" onclick="openFingerprintModal()"/>
         <div class="computer-screen-wrapper" onclick="zoomIntoScreen()">
             <div class="computer-screen folder-row" id="folderRow"></div>
@@ -391,7 +397,7 @@
   
     <div class="laptop-corner">
         <p>Vincent's Laptop</p>
-        <img src="img/laptop.png" alt="Laptop" class="laptop" data-bs-toggle="modal" data-bs-target="#laptopModal">
+        <img src="img/laptop.png" alt="Laptop" class="laptop" id="laptop" data-bs-toggle="modal" data-bs-target="#laptopModal">
     </div>
 
     <!-- Laptop Modal with PIN Entry -->
@@ -441,17 +447,17 @@
     <div class="folder-container">
         <div class="folder-wrapper">
             <h5>Evidence Folder</h5>
-            <img src="img/evidence-folder.png" alt="Evidence Folder" class="folder mb-5" data-bs-toggle="modal" data-bs-target="#evidenceModal">
+            <img src="img/evidence-folder.png" alt="Evidence Folder" class="folder mb-5" id="evidence-folder" data-bs-toggle="modal" data-bs-target="#evidenceModal">
         </div>
         <div class="folder-wrapper">
             <h5>Pending Analysis</h5>
-            <img src="img/police-reports-folder.png" alt="Pending Analysis Folder" class="folder mb-5" data-bs-toggle="modal" data-bs-target="#pendingAnalysisModal">
+            <img src="img/police-reports-folder.png" alt="Pending Analysis Folder" class="folder mb-5" id="analysis-folder" data-bs-toggle="modal" data-bs-target="#pendingAnalysisModal">
         </div>
     </div>
     <div class="folder-container-1">
         <div class="folder-wrapper">
             <h5>Suspect Folder</h5>
-            <img src="img/suspect-folder.png" alt="Suspect Folder" class="folder" data-bs-toggle="modal" data-bs-target="#suspectModal">
+            <img src="img/suspect-folder.png" alt="Suspect Folder" class="folder" id="suspect-folder" data-bs-toggle="modal" data-bs-target="#suspectModal">
         </div>
     </div>
 
@@ -563,6 +569,42 @@
 
     
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+
+    <script>
+        // Crumpled Paper
+        document.getElementById("crumpledPaper").addEventListener("click", () => {
+          document.getElementById("sound-paper").play();
+        });
+      
+        // ID Card
+        document.getElementById("idCard").addEventListener("click", () => {
+          document.getElementById("sound-idcard").play();
+        });
+      
+        // Folder(s)
+        const folderIds = ["evidence-folder", "analysis-folder", "suspect-folder"];
+        folderIds.forEach(id => {
+            document.getElementById(id).addEventListener("click", () => {
+                document.getElementById("sound-folder").currentTime = 0; // reset so it can replay fast
+                document.getElementById("sound-folder").play();
+            });
+        });
+      
+        // Laptop
+        const laptop = document.getElementById("laptop");
+        const laptopModal = document.getElementById("laptopModal");
+        laptop.addEventListener("click", () => {
+            const openSound = document.getElementById("sound-laptop-open");
+            openSound.currentTime = 0;
+            openSound.play();
+        });
+        // Bootstrap modal close event listener
+        laptopModal.addEventListener("hidden.bs.modal", () => {
+            const closeSound = document.getElementById("sound-laptop-close");
+            closeSound.currentTime = 0;
+            closeSound.play();
+        });
+    </script>     
 
     <script>
         const folderSnippets = [
